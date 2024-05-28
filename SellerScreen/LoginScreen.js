@@ -1,26 +1,17 @@
-/** @format */
 import React, { useState, useEffect } from "react";
 import Constants from "expo-constants";
-// import ax
 import {
   View,
   Text,
   TouchableOpacity,
   Modal,
-  ActivityIndicator,
   Dimensions,
   Pressable,
-  Image, ImageBackground, ScrollView
+  Image,
+  ImageBackground,
+  ScrollView,
 } from "react-native";
 import { TextInput } from "react-native-paper";
-
-import {
-  NotificationPermissionsStatus,
-  requestPermissionsAsync,
-  getExpoPushTokenAsync,
-} from "expo-notifications";
-import FormInput from "../Components/FormInput";
-import LoginBtn from "../Components/Loginbtn";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -33,83 +24,153 @@ import {
   getDocs,
   updateDoc,
 } from "firebase/firestore";
-import {
-  changeemail,
-  changeuserid,
-  changeuserusername,
-} from "../Redux/counterSlice";
+import { changeemail, changeuserid, changeuserusername } from "../Redux/counterSlice";
 import { useDispatch } from "react-redux";
+import Loader from "./Loader"; // Import the Loader component
+import AsyncStorage from '@react-native-community/async-storage';
+
 const projectId = Constants.expoConfig.extra.eas.projectId;
+
 const LoginScreen = ({ navigation }) => {
   let dispatch = useDispatch();
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [username, setUserName] = useState('');
+  const [password, setPassword] = useState('');
+  const [loader, setLoader] = useState(false);
+  const [Device_token, SetDevice_token] = useState("");
+
+  useEffect(() => {
+    // Check if password is stored in local storage
+    AsyncStorage.getItem('password')
+      .then((storedPassword) => {
+        if (storedPassword) {
+          // If password is stored, automatically sign in with the stored password
+          setPassword(storedPassword);
+          AsyncStorage.getItem('email')
+            .then((storedEmail) => {
+              if (storedEmail) {
+                // If email is stored, set it to the username state variable
+                setUserName(storedEmail);
+              }
+            })
+            .catch(error => {
+              console.error('Error retrieving email from local storage:', error);
+            });
+          Signin();
+        } else {
+          // If password is not stored, proceed as usual
+          registerForPushNotificationsAsync().then((val) => {
+            SetDevice_token(val);
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error retrieving password from local storage:', error);
+      });
+  }, []);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-  const [username, setuserName] = React.useState();
-  const [password, setPassword] = React.useState();
-  const [loader, setloader] = useState(false);
-  const [Device_token, SetDevice_token] = useState("");
-  useEffect(() => {
-    registerForPushNotificationsAsync().then((val) => {
-      SetDevice_token(val);
-    });
-  }, []);
-  const Signin = () => {
-    setloader(true);
-    const usersRef = collection(firestore, "user");
-    const q = query(usersRef, where("user_email", "==", username));
-    console.log("Errj");
-    const Data = {
-      device_token: Device_token,
-    };
-    signInWithEmailAndPassword(auth, username, password)
-      .then(() => {
-        console.log("Singined");
-        getDocs(q)
-          .then((querySnapshot) => {
-            querySnapshot.forEach((doc1) => {
-              console.log("Document ID:", doc1.id);
-              const documentRef = doc(firestore, "user", doc1.id);
-              // console.log();
-              dispatch(changeuserusername(doc1.data()["user_name"]));
-              dispatch(changeemail(username));
-              dispatch(changeuserid(doc1.id));
-              // console.log('Document data:', doc.data());
-              updateDoc(documentRef, Data)
-                .then(() => {
-                  console.log("Document updated successfully.");
-                  setloader(false);
-                  navigation.replace("Tab");
-                })
-                .catch((error) => {
-                  console.error("Error updating document:", error);
-                  setloader(false);
-                });
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-            setloader(false);
-          });
-      })
-      .catch((err) => {
-        setloader(false);
 
-        console.log(err);
+  const Signin = async () => {
+    setLoader(true);
+    signInWithEmailAndPassword(auth, username, password)
+      .then(async (userCredential) => {
+        const user = userCredential.user;
+        if (user.emailVerified) {
+          // User's email is verified, proceed with sign-in
+          console.log("User's email is verified");
+          const usersRef = collection(firestore, "user");
+          const q = query(usersRef, where("user_email", "==", username));
+          const Data = {
+            device_token: Device_token,
+          };
+          getDocs(q)
+            .then((querySnapshot) => {
+              querySnapshot.forEach((doc1) => {
+                const documentRef = doc(firestore, "user", doc1.id);
+                dispatch(changeuserusername(doc1.data()["user_name"]));
+                dispatch(changeemail(username));
+                dispatch(changeuserid(doc1.id));
+                updateDoc(documentRef, Data)
+                  .then(() => {
+                    console.log("Document updated successfully.");
+
+                    // Store the email and password in local storage
+                    AsyncStorage.setItem('password', password)
+                      .then(() => {
+                        console.log('Password stored successfully');
+                        setLoader(false);
+                        navigation.replace("Tab");
+                      })
+                      .catch(error => {
+                        console.error('Error storing password:', error);
+                        setLoader(false);
+                      });
+                  })
+                  .catch((error) => {
+                    console.error("Error updating document:", error);
+                    setLoader(false);
+                  });
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+              setLoader(false);
+            });
+        } else {
+          // User's email is not verified, inform the user
+          console.log("User's email is not verified");
+          alert("Please verify your email before signing in.");
+          setLoader(false);
+        }
+      })
+      .catch((error) => {
+        setLoader(false);
+        console.log(error);
+        // Handle sign-in errors
       });
   };
 
+  async function registerForPushNotificationsAsync() {
+    let token;
+
+    if (Platform.OS === "android") {
+      await Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: "#FF231F7C",
+      });
+    }
+
+    if (Device.isDevice) {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        alert("Failed to get push token for push notification!");
+        return;
+      }
+      token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+      console.log(token);
+    } else {
+      alert("Must use physical device for Push Notifications");
+    }
+
+    return token;
+  }
   return (
-   
     <ScrollView>
-      <View
-        style={{
-          height: Dimensions.get("window").height,
-          backgroundColor: "#ffffff",
-        }}
-      >
+    <View style={{ flex: 1, height: Dimensions.get("window").height, backgroundColor: "#fff" }}>
+        {loader ? (
+          <Loader />
+        ) : (
         <View
           style={{
             width: 327,
@@ -179,7 +240,7 @@ const LoginScreen = ({ navigation }) => {
           <TextInput
             label="Email Address"
             value={username}
-            onChangeText={(Email) => setuserName(Email)}
+            onChangeText={(Email) => setUserName(Email)}
             style={{
               backgroundColor: "rgba(58, 58, 77, 0.1)",
             }}
@@ -308,41 +369,42 @@ const LoginScreen = ({ navigation }) => {
             </View>
           </Pressable>
         </View>
+      )}
       </View>
     </ScrollView>
   );
 };
 
 export default LoginScreen;
-async function registerForPushNotificationsAsync() {
-  let token;
+// async function registerForPushNotificationsAsync() {
+//   let token;
 
-  if (Platform.OS === "android") {
-    await Notifications.setNotificationChannelAsync("default", {
-      name: "default",
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#FF231F7C",
-    });
-  }
+//   if (Platform.OS === "android") {
+//     await Notifications.setNotificationChannelAsync("default", {
+//       name: "default",
+//       importance: Notifications.AndroidImportance.MAX,
+//       vibrationPattern: [0, 250, 250, 250],
+//       lightColor: "#FF231F7C",
+//     });
+//   }
 
-  if (Device.isDevice) {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    if (finalStatus !== "granted") {
-      alert("Failed to get push token for push notification!");
-      return;
-    }
-    token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
-    console.log(token);
-  } else {
-    alert("Must use physical device for Push Notifications");
-  }
+//   if (Device.isDevice) {
+//     const { status: existingStatus } =
+//       await Notifications.getPermissionsAsync();
+//     let finalStatus = existingStatus;
+//     if (existingStatus !== "granted") {
+//       const { status } = await Notifications.requestPermissionsAsync();
+//       finalStatus = status;
+//     }
+//     if (finalStatus !== "granted") {
+//       alert("Failed to get push token for push notification!");
+//       return;
+//     }
+//     token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+//     console.log(token);
+//   } else {
+//     alert("Must use physical device for Push Notifications");
+//   }
 
-  return token;
-}
+//   return token;
+// }

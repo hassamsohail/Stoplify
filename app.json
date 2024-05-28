@@ -11,12 +11,6 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "extra": {
-      "projectId": "stoplify-403a6",
-      "eas": {
-        "projectId": "c08e9b44-7b6e-4561-816b-498dd51ec05d"
-      }
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -27,7 +21,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.hassam009.Stoplify"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -37,6 +32,11 @@
     },
     "updates": {
       "url": "https://u.expo.dev/c08e9b44-7b6e-4561-816b-498dd51ec05d"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8b34e808-4395-49ca-b893-0e3a14f085b9"
+      }
     }
   }
 }
