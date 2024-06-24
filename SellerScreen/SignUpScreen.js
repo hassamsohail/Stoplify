@@ -191,7 +191,7 @@ const SignUpScreen = () => {
               </ImageBackground>
             </Pressable>
             <View style={{ height: 20 }} />
-            <Pressable onPress={() => navigation.navigate("Login")}>
+            <Pressable onPress={() => navigation.navigate("LoginScreen")}>
               <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
                 <Text style={{ fontSize: 14, color: "#9B9B9B", fontWeight: "600", textAlign: "center" }}>
                   Have an Account?
