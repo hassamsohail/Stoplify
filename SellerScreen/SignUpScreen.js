@@ -59,7 +59,7 @@ const SignUpScreen = () => {
               .then((docRef) => {
                 setLoader(false);
                 alert('Verification email sent. Please check your inbox.');
-                navigation.goBack();
+                navigation.navigate("Join");
               })
               .catch((error) => {
                 alert("Error adding document:", error);

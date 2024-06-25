@@ -41,6 +41,7 @@ import DeviceNotificatin from "./BuyerScreen/Notification";
 import FQ from "./BuyerScreen/FQ";
 import Support from "./BuyerScreen/Support";
 import UserChat from "./BuyerScreen/UserChat";
+import Join from "./SellerScreen/Join";
 
 // console.log('Project ID:', projectId);
 // Notifications.setNotificationHandler({
@@ -56,6 +57,13 @@ function App() {
       <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
           <Stack.Navigator>
+          <Stack.Screen
+              options={{
+                headerShown: false,
+              }}
+              name="Join"
+              component={Join}
+            />
             <Stack.Screen
               options={{
                 headerShown: false,
@@ -175,6 +183,7 @@ function App() {
               name="Support"
               component={Support}
             />
+            
             <Stack.Screen
               name="UserChat"
               component={UserChat}
