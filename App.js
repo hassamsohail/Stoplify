@@ -42,6 +42,9 @@ import FQ from "./BuyerScreen/FQ";
 import Support from "./BuyerScreen/Support";
 import UserChat from "./BuyerScreen/UserChat";
 import Join from "./SellerScreen/Join";
+import BuyerProjectlist from "./BuyerScreen/BuyerProjectlist";
+import ProposalList from "./BuyerScreen/ProposalList";
+import CompleteProfile from "./SellerScreen/CompleteProfile";
 
 // console.log('Project ID:', projectId);
 // Notifications.setNotificationHandler({
@@ -64,13 +67,37 @@ function App() {
               name="Join"
               component={Join}
             />
+             <Stack.Screen
+              options={{
+                headerShown: false,
+              }}
+              name="CompleteProfile"
+              component={CompleteProfile}
+            />
+            
+            <Stack.Screen
+             options={{
+               headerShown: false,
+             }}
+             name="BuyerProjectlist"
+             component={BuyerProjectlist}
+           />
+             <Stack.Screen
+             options={{
+               headerShown: false,
+             }}
+             name="ProposalList"
+             component={ProposalList}
+           />
+          
+{/*             
             <Stack.Screen
               options={{
                 headerShown: false,
               }}
               name="LoginScreen"
               component={LoginScreen}
-            />
+            /> */}
             <Stack.Screen
               options={{
                 headerShown: false,

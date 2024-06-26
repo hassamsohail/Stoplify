@@ -33,30 +33,33 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [loader, setLoader] = useState(false);
   const [Device_token, SetDevice_token] = useState("");
-
   useEffect(() => {
     const checkStoredCredentials = async () => {
       try {
         const storedUsername = await AsyncStorage.getItem('username');
         const storedPassword = await AsyncStorage.getItem('password');
+        const storedEmail = await AsyncStorage.getItem('user_email');
+        const storedName = await AsyncStorage.getItem('user_name');
+        const storedId = await AsyncStorage.getItem('user_id');
         
         if (storedUsername && storedPassword) {
           setUserName(storedUsername);
           setPassword(storedPassword);
+          // console.log("this is a ", st)
           await attemptSignIn(storedUsername, storedPassword);
         }
       } catch (error) {
         console.error('Error retrieving stored credentials:', error);
       }
     };
-
+  
     checkStoredCredentials();
   }, []);
-
+  
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
+  
   const attemptSignIn = async (username, password) => {
     setLoader(true);
     try {
@@ -70,11 +73,22 @@ const LoginScreen = ({ navigation }) => {
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach(async (doc1) => {
           const documentRef = doc(firestore, "user", doc1.id);
+          const userData = doc1.data(); // Get the user data
+          const userEmail = userData.user_email;
+          const userName = userData.user_name;
+          const userId = userData.user_id;
+  console.log("This is a user data email",userEmail )
           await updateDoc(documentRef, Data);
           console.log("Document updated successfully.");
-
-          await AsyncStorage.multiSet([['username', username], ['password', password]]);
-          console.log('Username and password stored successfully');
+  
+          await AsyncStorage.multiSet([
+            ['username', username],
+            ['password', password],
+            ['user_email', userEmail],
+            ['user_name', userName],
+            ['user_id', userId]
+          ]);
+          console.log('User details stored successfully');
           setLoader(false);
           navigation.replace("Tab");
         });
@@ -89,10 +103,11 @@ const LoginScreen = ({ navigation }) => {
       // Handle sign-in errors
     }
   };
-
+  
   const Signin = () => {
     attemptSignIn(username, password);
   };
+  
 
   return (
     <ScrollView>
