@@ -50,6 +50,7 @@ export default function JobDetail() {
   const Post = () => {
     const document_id = doc_id();
     const userdocumentref = doc(collectionRef, document_id);
+    console.log("This is Project Id",project_id);
 
     const Data = {
       project_id: project_id,
@@ -58,7 +59,6 @@ export default function JobDetail() {
       bid: proposalText,
       job_title: job_title,
       work_skills: work_skills,
-      experience_level: experience_level,
       project_scope: project_scope,
       time_taken: time_taken,
       budget_status: budget_status,
@@ -73,7 +73,8 @@ export default function JobDetail() {
         setloader(false);
         navigation.goBack();
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log(error);
         setloader(false);
         Alert.alert("Opps", "Something went wrong");
       });
@@ -96,7 +97,8 @@ export default function JobDetail() {
           Post();
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log(err);
         setloader(false);
         Alert.alert("Opps", "Something went wrong");
       });

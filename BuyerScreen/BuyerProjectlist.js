@@ -397,7 +397,7 @@ export default function BuyerProjectlist() {
                 </View>
                 <ListItem onPress={() => { closeBottomSheet(); navigation.navigate('ProposalList', { projectId: selectedJobItem.doc_id ,
  job_title: selectedJobItem.job_title,
-
+user_name: selectedJobItem.user_name
 
 
                 }); }} containerStyle={{ backgroundColor: '#FFFFFF' }}>

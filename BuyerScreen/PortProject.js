@@ -214,6 +214,7 @@ export default function PostProject() {
       user_id: userId,
       user_name: userName,
       user_email: userEmail,
+      project_id:document_id
     };
 
     setloader(true);

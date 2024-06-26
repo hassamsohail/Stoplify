@@ -45,6 +45,7 @@ import Join from "./SellerScreen/Join";
 import BuyerProjectlist from "./BuyerScreen/BuyerProjectlist";
 import ProposalList from "./BuyerScreen/ProposalList";
 import CompleteProfile from "./SellerScreen/CompleteProfile";
+import Orderlist from "./BuyerScreen/Orderlist";
 
 // console.log('Project ID:', projectId);
 // Notifications.setNotificationHandler({
@@ -60,22 +61,8 @@ function App() {
       <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
           <Stack.Navigator>
+         
           <Stack.Screen
-              options={{
-                headerShown: false,
-              }}
-              name="Join"
-              component={Join}
-            />
-             <Stack.Screen
-              options={{
-                headerShown: false,
-              }}
-              name="CompleteProfile"
-              component={CompleteProfile}
-            />
-            
-            <Stack.Screen
              options={{
                headerShown: false,
              }}
@@ -89,15 +76,25 @@ function App() {
              name="ProposalList"
              component={ProposalList}
            />
-          
-{/*             
+          <Stack.Screen
+              name="UserChat"
+              component={UserChat}
+              // options={({ route }) => ({ title: route.params.username })}
+            />
+          <Stack.Screen
+              options={{
+                headerShown: false,
+              }}
+              name="Join"
+              component={Join}
+            />
             <Stack.Screen
               options={{
                 headerShown: false,
               }}
               name="LoginScreen"
               component={LoginScreen}
-            /> */}
+            />
             <Stack.Screen
               options={{
                 headerShown: false,
@@ -105,13 +102,30 @@ function App() {
               name="SignUpScreen"
               component={SignUpScreen}
             />
-            <Stack.Screen
+            
+             <Stack.Screen
+              options={{
+                headerShown: false,
+              }}
+              name="CompleteProfile"
+              component={CompleteProfile}
+            />
+             <Stack.Screen
               options={{
                 headerShown: false,
               }}
               name="Tab"
               component={TabNavi}
             />
+             <Stack.Screen
+              options={{
+                headerShown: false,
+              }}
+              name="Orderlist"
+              component={Orderlist}
+            />
+          
+           
             <Stack.Screen
               options={{
                 headerShown: false,
@@ -211,11 +225,7 @@ function App() {
               component={Support}
             />
             
-            <Stack.Screen
-              name="UserChat"
-              component={UserChat}
-              options={({ route }) => ({ title: route.params.username })}
-            />
+            
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaView>

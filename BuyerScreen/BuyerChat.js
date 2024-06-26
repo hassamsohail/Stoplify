@@ -14,20 +14,19 @@ const BuyChat = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-  
-    <Text
-    style=
-    {{
-      fontSize:20,
-      fontWeight:"bold",
-      alignSelf:"center",
-      color:"#000000"
-    }}
-    >
 
-Chat
-    </Text> 
-      <FlatList
+      <Text
+        style=
+        {{
+          fontSize: 20,
+          fontWeight: "bold",
+          alignSelf: "center",
+          color: "#000000"
+        }}
+      >
+        Chat
+      </Text>
+      {/* <FlatList
         data={users}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
@@ -38,7 +37,7 @@ Chat
             <Text style={styles.username}>{item}</Text>
           </TouchableOpacity>
         )}
-      />
+      /> */}
     </View>
   );
 };

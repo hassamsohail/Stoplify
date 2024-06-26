@@ -243,10 +243,14 @@ export default function ProposalList() {
                                     </View>
                                 </View>
 
-                                <TouchableOpacity onPress={() => openBottomSheet(item)}>
+                                <TouchableOpacity onPress={() => {
+                                    navigation.navigate("UserChat", {
+                                        Username:Username
+                                    })
+                                }
 
+                                }>
                                     <View
-
                                         style={{
                                             width: 87, height: 38, borderRadius: 5, backgroundColor: "#ED6D34", justifyContent: "center", alignItems: "center"
                                         }}
