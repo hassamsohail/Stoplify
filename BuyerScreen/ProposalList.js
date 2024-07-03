@@ -7,12 +7,12 @@ import {
     TouchableOpacity,
     Image
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
-import { firestore } from "../firebase/firebase";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { BottomSheet, ListItem } from 'react-native-elements'; // Example library for bottom sheet
-import { Ionicons } from '@expo/vector-icons'; // Expo vector icons
+import React, {useEffect, useState} from "react";
+import {collection, getDocs, deleteDoc, doc, getDoc} from "firebase/firestore";
+import {firestore} from "../firebase/firebase";
+import {useNavigation, useRoute} from "@react-navigation/native";
+import {BottomSheet, ListItem} from 'react-native-elements'; // Example library for bottom sheet
+import {Ionicons} from '@expo/vector-icons'; // Expo vector icons
 
 
 export default function ProposalList() {
@@ -28,9 +28,10 @@ export default function ProposalList() {
         budget_rate,
         job_description,
         Username,
-        project_id,
+        projectId,
         project_email,
     } = route.params;
+    console.warn(projectId);
 
     const [search, setsearch] = React.useState();
     const [allData, setallData] = useState([]);
@@ -62,8 +63,59 @@ export default function ProposalList() {
     useEffect(() => {
         navigation.addListener("focus", () => {
             GetAllDocs();
+            GetAllBids();
         });
     }, []);
+
+    /*const GetAllBids = async (projectId, SetJobs) => {
+        try {
+            const bidsSnapshot = await getDocs(collection(firestore, "Bids"));
+            let temparray = [];
+
+            for (const doc1 of bidsSnapshot.docs) {
+                const bidData = doc1.data();
+                temparray.push(bidData);
+                /!*if (bidData.project_id === projectId) {
+                    const userRef = doc(firestore, "Users", bidData.user_id);
+                    const userSnapshot = await getDoc(userRef);
+                    console.warn('User exist: ' + userSnapshot.exists());
+                    if (userSnapshot.exists()) {
+                        const userData = userSnapshot.data();
+                        temparray.push({...bidData, user: userData});
+                    }
+                }*!/
+            }
+
+            console.log("---------------data-");
+            console.log(temparray);
+            // SetJobs(temparray);
+            console.log("---------------end-");
+        } catch (err) {
+            console.error(err);
+        }
+    };*/
+
+    const GetAllBids = () => {
+        getDocs(collection(firestore, "Bids"))
+            .then((querySnapshot) => {
+                let temparray = [];
+
+                querySnapshot.forEach((doc1) => {
+                    if (
+                        doc1?.data()?.project_id === projectId
+                    ) {
+                        temparray.push(doc1.data());
+                        // doc1?.data()?.user_id
+                    }
+                });
+
+                SetJobs(temparray);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
     const GetAllDocs = () => {
         getDocs(collection(firestore, "projects"))
             .then((querySnapshot) => {
@@ -73,7 +125,7 @@ export default function ProposalList() {
                     temparray.push(doc1.data());
                 });
 
-                SetJobs(temparray);
+                // SetJobs(temparray);
                 setallData(temparray);
             })
             .catch((err) => {
@@ -174,7 +226,7 @@ export default function ProposalList() {
                     data={Jobs}
                     keyExtractor={(item, index) => index.toString()}
                     showsVerticalScrollIndicator={false}
-                    renderItem={({ item }) => (
+                    renderItem={({item}) => (
 
                         <View
                             style={{
@@ -229,7 +281,7 @@ export default function ProposalList() {
                                                 // fontWeight: 'bold',
                                             }}
                                         >
-                                            Expert ios & android
+                                            {item?.job_title}
                                         </Text>
                                         <Text
                                             style={{
@@ -245,14 +297,20 @@ export default function ProposalList() {
 
                                 <TouchableOpacity onPress={() => {
                                     navigation.navigate("UserChat", {
-                                        Username:Username
+                                        Username: Username,
+                                        userId: item?.user_id
                                     })
                                 }
 
                                 }>
                                     <View
                                         style={{
-                                            width: 87, height: 38, borderRadius: 5, backgroundColor: "#ED6D34", justifyContent: "center", alignItems: "center"
+                                            width: 87,
+                                            height: 38,
+                                            borderRadius: 5,
+                                            backgroundColor: "#ED6D34",
+                                            justifyContent: "center",
+                                            alignItems: "center"
                                         }}
                                     >
 
@@ -280,7 +338,7 @@ export default function ProposalList() {
                                     // fontWeight:"bold"
                                 }}
                             >
-                                Cover letter
+                                {item?.purposal_status}
                             </Text>
                             <Text
                                 style={{
@@ -290,7 +348,7 @@ export default function ProposalList() {
                                     // fontWeight:"bold"
                                 }}
                             >
-                                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
+                                {item?.job_description}
                             </Text>
                             <View
                                 style={{
@@ -306,30 +364,39 @@ export default function ProposalList() {
             </View>
             <BottomSheet
                 isVisible={bottomSheetVisible}
-                containerStyle={{ backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)' }}
+                containerStyle={{backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)'}}
             >
                 <View style={styles.bottomSheetHeader}>
                     <Text style={styles.bottomSheetTitle}>Select</Text>
                     <TouchableOpacity onPress={closeBottomSheet}>
-                        <Ionicons name="close" size={24} color="black" />
+                        <Ionicons name="close" size={24} color="black"/>
                     </TouchableOpacity>
                 </View>
-                <ListItem onPress={() => { closeBottomSheet(); navigation.navigate('ViewProposals', { projectId: selectedJobItem.doc_id }); }} containerStyle={{ backgroundColor: '#FFFFFF' }}>
+                <ListItem onPress={() => {
+                    closeBottomSheet();
+                    navigation.navigate('ViewProposals', {projectId: selectedJobItem.doc_id});
+                }} containerStyle={{backgroundColor: '#FFFFFF'}}>
                     <ListItem.Content>
                         <ListItem.Title>View Proposals</ListItem.Title>
                     </ListItem.Content>
                 </ListItem>
-                <ListItem onPress={() => { closeBottomSheet(); navigation.navigate('JobDetail', { projectId: selectedJobItem.doc_id }); }} containerStyle={{ backgroundColor: '#FFFFFF' }}>
+                <ListItem onPress={() => {
+                    closeBottomSheet();
+                    navigation.navigate('JobDetail', {projectId: selectedJobItem.doc_id});
+                }} containerStyle={{backgroundColor: '#FFFFFF'}}>
                     <ListItem.Content>
                         <ListItem.Title>View Job Posting</ListItem.Title>
                     </ListItem.Content>
                 </ListItem>
-                <ListItem onPress={() => { closeBottomSheet(); navigation.navigate('EditPosting', { projectId: selectedJobItem.doc_id }); }} containerStyle={{ backgroundColor: '#FFFFFF' }}>
+                <ListItem onPress={() => {
+                    closeBottomSheet();
+                    navigation.navigate('EditPosting', {projectId: selectedJobItem.doc_id});
+                }} containerStyle={{backgroundColor: '#FFFFFF'}}>
                     <ListItem.Content>
                         <ListItem.Title>Edit Posting</ListItem.Title>
                     </ListItem.Content>
                 </ListItem>
-                <ListItem onPress={removeJobItem} containerStyle={{ backgroundColor: '#FFFFFF' }}>
+                <ListItem onPress={removeJobItem} containerStyle={{backgroundColor: '#FFFFFF'}}>
                     <ListItem.Content>
                         <ListItem.Title>Remove Posting</ListItem.Title>
                     </ListItem.Content>

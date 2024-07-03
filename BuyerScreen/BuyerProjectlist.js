@@ -7,15 +7,16 @@ import {
     TouchableOpacity,
     Image
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
-import { firestore } from "../firebase/firebase";
-import { useNavigation } from "@react-navigation/native";
-import { BottomSheet, ListItem } from 'react-native-elements'; // Example library for bottom sheet
-import { Ionicons } from '@expo/vector-icons'; // Expo vector icons
+import React, {useEffect, useState} from "react";
+import {collection, getDocs, deleteDoc, doc} from "firebase/firestore";
+import {firestore} from "../firebase/firebase";
+import {useNavigation} from "@react-navigation/native";
+import {BottomSheet, ListItem} from 'react-native-elements'; // Example library for bottom sheet
+import {Ionicons} from '@expo/vector-icons'; // Expo vector icons
 
 
 export default function BuyerProjectlist() {
+
     const [search, setsearch] = React.useState();
     const [allData, setallData] = useState([]);
     const [data, setdata] = React.useState([]);
@@ -48,8 +49,45 @@ export default function BuyerProjectlist() {
             GetAllDocs();
         });
     }, []);
-    const GetAllDocs = () => {
-        getDocs(collection(firestore, "projects"))
+    const GetAllDocs = async () => {
+        try {
+            // Fetch all projects
+            const projectsSnapshot = await getDocs(collection(firestore, "projects"));
+            let projectsArray = [];
+
+            projectsSnapshot.forEach((doc) => {
+                let projectData = doc.data();
+                projectData.id = doc.id; // Store the document ID for reference
+                projectData.totalBids = 0; // Initialize totalBids to 0
+                projectsArray.push(projectData);
+            });
+
+            // Fetch all bids
+            const bidsSnapshot = await getDocs(collection(firestore, "Bids"));
+            let bidsArray = [];
+
+            bidsSnapshot.forEach((doc) => {
+                let bidData = doc.data();
+                bidData.id = doc.id; // Store the document ID for reference
+                bidsArray.push(bidData);
+            });
+
+            // Count the total bids for each project
+            projectsArray.forEach((project) => {
+                const projectBids = bidsArray.filter(bid => bid.project_id === project.doc_id);
+                project.totalBids = projectBids.length;
+            });
+
+            console.log(`------------------------------bidsArray-`);
+            console.log(projectsArray);
+            console.log(`------------------------------bidsArray-`);
+            // Set the data to the state
+            SetJobs(projectsArray);
+            setallData(projectsArray);
+        } catch (err) {
+            console.log(err);
+        }
+       /* getDocs(collection(firestore, "projects"))
             .then((querySnapshot) => {
                 let temparray = [];
 
@@ -62,7 +100,7 @@ export default function BuyerProjectlist() {
             })
             .catch((err) => {
                 console.log(err);
-            });
+            });*/
     };
 
     const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
@@ -143,7 +181,7 @@ export default function BuyerProjectlist() {
                         Explain your project here
                     </Text>
                 </View>
-                <TouchableOpacity onPress={() => navigation.navigate("PostProject")} >
+                <TouchableOpacity onPress={() => navigation.navigate("PostProject")}>
 
                     <View
 
@@ -265,7 +303,7 @@ export default function BuyerProjectlist() {
                     data={Jobs}
                     keyExtractor={(item, index) => index.toString()}
                     showsVerticalScrollIndicator={false}
-                    renderItem={({ item }) => (
+                    renderItem={({item}) => (
 
                         <View
                             style={{
@@ -285,17 +323,17 @@ export default function BuyerProjectlist() {
                                 }}
                             >
 
-                              
-                                    <Text
-                                        style={{
-                                            fontSize: 18,
-                                            color: "#000000",
-                                            // fontWeight: 'bold',
-                                        }}
-                                    >
-                                        {item.job_title}
-                                    </Text>
-                            
+
+                                <Text
+                                    style={{
+                                        fontSize: 18,
+                                        color: "#000000",
+                                        // fontWeight: 'bold',
+                                    }}
+                                >
+                                    {item.job_title}
+                                </Text>
+
                                 <TouchableOpacity onPress={() => openBottomSheet(item)}>
 
 
@@ -340,7 +378,7 @@ export default function BuyerProjectlist() {
                                             // fontWeight:"bold"
                                         }}
                                     >
-                                        7
+                                        {item?.totalBids?.length}
                                     </Text>
 
                                     <Text
@@ -387,26 +425,30 @@ export default function BuyerProjectlist() {
             </View>
             <BottomSheet
                 isVisible={bottomSheetVisible}
-                containerStyle={{ backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)' }}
+                containerStyle={{backgroundColor: 'rgba(0.5, 0.25, 0, 0.2)'}}
             >
                 <View style={styles.bottomSheetHeader}>
                     <Text style={styles.bottomSheetTitle}>Select</Text>
                     <TouchableOpacity onPress={closeBottomSheet}>
-                        <Ionicons name="close" size={24} color="black" />
+                        <Ionicons name="close" size={24} color="black"/>
                     </TouchableOpacity>
                 </View>
-                <ListItem onPress={() => { closeBottomSheet(); navigation.navigate('ProposalList', { projectId: selectedJobItem.doc_id ,
- job_title: selectedJobItem.job_title,
-user_name: selectedJobItem.user_name
-
-
-                }); }} containerStyle={{ backgroundColor: '#FFFFFF' }}>
+                <ListItem onPress={() => {
+                    closeBottomSheet();
+                    navigation.navigate('ProposalList', {
+                        projectId: selectedJobItem.doc_id,
+                        job_title: selectedJobItem.job_title,
+                        user_name: selectedJobItem.user_name,
+                    });
+                }} containerStyle={{backgroundColor: '#FFFFFF'}}>
                     <ListItem.Content>
                         <ListItem.Title>View Proposals</ListItem.Title>
                     </ListItem.Content>
                 </ListItem>
                 <ListItem onPress={() => {
-                    closeBottomSheet(); navigation.navigate('JobDetail', {
+                    closeBottomSheet();
+                    closeBottomSheet();
+                    navigation.navigate('JobDetail', {
                         Username: selectedJobItem.user_name,
                         project_id: selectedJobItem.doc_id,
                         project_email: selectedJobItem.user_email,
@@ -419,17 +461,23 @@ user_name: selectedJobItem.user_name
                         budget_rate: selectedJobItem.budget_rate,
                         job_description: selectedJobItem.job_description,
                     });
-                }} containerStyle={{ backgroundColor: '#FFFFFF' }}>
+                }} containerStyle={{backgroundColor: '#FFFFFF'}}>
                     <ListItem.Content>
                         <ListItem.Title>View Job Posting</ListItem.Title>
                     </ListItem.Content>
                 </ListItem>
-                <ListItem onPress={() => { closeBottomSheet(); navigation.navigate('EditPosting', { projectId: selectedJobItem.doc_id }); }} containerStyle={{ backgroundColor: '#FFFFFF' }}>
+                <ListItem onPress={() => {
+                    closeBottomSheet();
+                    navigation.navigate('PostProject', {
+                        projectId: selectedJobItem.doc_id,
+                        jobItem: selectedJobItem
+                    });
+                }} containerStyle={{backgroundColor: '#FFFFFF'}}>
                     <ListItem.Content>
                         <ListItem.Title>Edit Posting</ListItem.Title>
                     </ListItem.Content>
                 </ListItem>
-                <ListItem onPress={removeJobItem} containerStyle={{ backgroundColor: '#FFFFFF' }}>
+                <ListItem onPress={removeJobItem} containerStyle={{backgroundColor: '#FFFFFF'}}>
                     <ListItem.Content>
                         <ListItem.Title>Remove Posting</ListItem.Title>
                     </ListItem.Content>

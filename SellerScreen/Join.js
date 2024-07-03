@@ -120,10 +120,16 @@ export default function Join({ navigation }) {
           onPress={() => {
             if (indexofData === 0) {
               // Navigate to the client form screen
-              navigation.navigate('PostProject');
+                navigation.navigate("SignUpScreen", {
+                    role: 'client'
+                });
+             //  navigation.navigate('PostProject');
             } else {
+                navigation.navigate("SignUpScreen", {
+                    role: 'seller'
+                });
               // Navigate to the freelancer form screen
-              navigation.navigate('CompleteProfile');
+             // navigation.navigate('CompleteProfile');
             }
           }}
         >
