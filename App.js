@@ -31,13 +31,7 @@ import Chat from "./BuyerScreen/Chat";
 import SellerDetail from "./Seller/BidDetails";
 import TaskDetail from "./BuyerScreen/TaskDetails";
 import Learning_Skill from "./Learning_Skill/Learning_skill";
-import {
-    Ionicons,
-    MaterialCommunityIcons,
-    Entypo,
-    Feather,
-    AntDesign,
-} from "@expo/vector-icons";
+import { Ionicons } from '@expo/vector-icons';
 import DeviceNotificatin from "./BuyerScreen/Notification";
 import FQ from "./BuyerScreen/FQ";
 import Support from "./BuyerScreen/Support";
@@ -117,13 +111,7 @@ function App() {
                             name="CompleteProfile"
                             component={CompleteProfile}
                         />
-                        <Stack.Screen
-                            options={{
-                                headerShown: false,
-                            }}
-                            name="ChatBot"
-                            component={ChatBot}
-                        />
+                       
                         <Stack.Screen
                             options={{
                                 headerShown: false,
@@ -271,24 +259,24 @@ const TabNavi = () => {
                 }}
             />
             <Tab.Screen
-                name="Purposal"
-                component={Purposal}
+                name="ChatBot"
+                component={ChatBot}
                 options={{
                     tabBarIcon: ({focused, color, size}) => (
-                        <AntDesign
-                            name={focused ? "dingding" : "dingding"}
+                        <Ionicons
+                            name={focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"}
                             size={size}
                             color={focused ? "#E75E31" : "#CCCCCC"} // Specify the color for the icon
                         />
                     ),
                     tabBarLabel: ({focused, color}) => (
                         <Text style={{color: focused ? "#E75E31" : "#CCCCCC"}}>
-                            Proposals
+                            Chatbot
                         </Text>
                     ),
                 }}
             />
-            <Tab.Screen
+            {/* <Tab.Screen
                 name="BuyerChat"
                 component={BuyerChat}
                 options={{
@@ -305,7 +293,7 @@ const TabNavi = () => {
                         </Text>
                     ),
                 }}
-            />
+            /> */}
             <Tab.Screen
                 name="More"
                 component={More}

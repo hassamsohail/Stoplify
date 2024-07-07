@@ -42,6 +42,7 @@ export default function JobDetail() {
         Username,
         project_id,
         project_email,
+        owner_id,
     } = route.params;
     const collectionRef = collection(firestore, "Bids");
     const [loader, setloader] = useState(false);
@@ -81,6 +82,8 @@ export default function JobDetail() {
             job_description: job_description,
             purposal_status: "pending",
             project_owner_email: project_email,
+            id:document_id,
+            owner_id:owner_id
         };
 
         setDoc(userdocumentref, Data)
@@ -278,7 +281,9 @@ export default function JobDetail() {
                     }}>Write your Purposal</Text>
                     <View style={styles.proposalTextContainer}>
                         <TextInput
-                            style={styles.proposalText}
+                        textAlign="left"
+                        textAlignVertical="top"
+                        style={styles.proposalText}
                             multiline={true}
                             numberOfLines={5}
                             placeholder="Write your proposal here..."

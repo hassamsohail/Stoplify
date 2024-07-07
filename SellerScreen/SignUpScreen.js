@@ -37,7 +37,10 @@ const SignUpScreen = (params) => {
         const S4 = () => (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
         return `${S4()}${S4()}-${S4()}-${S4()}-${S4()}-${S4()}${S4()}${S4()}`;
     };
-
+    function validatePassword(password) {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/;
+        return regex.test(password);
+      }
     const CreateUser = () => {
         const newUUID = doc_id();
         const UserDocumentRef = doc(collectionRef, newUUID);
@@ -50,7 +53,19 @@ const SignUpScreen = (params) => {
             user_phone: phone,
             role: parms?.role || 'client'
         };
-
+        // if (!email.includes("@gmail.com")){
+        //     // alert("email include @gmail.com")
+        //     return;
+        // }
+        // if (password.length>10){
+            
+        // }
+        // if (validatePassword(password)) {
+        //     console.log("Password is valid");
+        //   } else {
+        //     console.log("Password does not meet the criteria");
+        //   }
+        // return;
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 // Send email verification

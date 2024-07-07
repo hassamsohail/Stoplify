@@ -16,7 +16,7 @@ const App = () => {
 
             const url = `https://generativelanguage.googleapis.com/v1beta3/models/text-bison-001:generateText?key=${apiKey}`;
 
-            const ai = `Your response to this prompt must be no more than 7 lines of text. You are the coach of an app like Upwork that we have names "Stoplify". You are thinking from the perspective of a chatbot helper, and the guide is what you will be giving them. Now review the following message and guide them. `;
+            const ai = `Your response to this prompt must be no more than 7 lines of text. You are the coach of an app like Fiverr that we have names "Save Time". You are thinking from the perspective of a chatbot helper, and the guide is what you will be giving them. Now review the following message and guide them. `;
             const requestBody = {
                 prompt: {
                     text: ai + ' (' + prompt + ')'

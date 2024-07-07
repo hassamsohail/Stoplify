@@ -243,7 +243,7 @@ Tasklist
           <Text style={{ color: focusedTab === 'Dashboard' ? '#000000' : '#000000' }}>Tasklist</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        {/* <TouchableOpacity 
 //         onPress={() =>{
 
 // // navigation.navigate("Chat")
@@ -264,7 +264,7 @@ onPress={() => navigation.navigate('Chat',{
             color={focusedTab === 'BuyerChat' ? '#000000' : '#000000'}
           />
           <Text style={{ color: focusedTab === 'BuyerChat' ? '#000000' : '#000000' }}>Chat</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity 
       onPress={() => navigation.navigate('FileUpload',{

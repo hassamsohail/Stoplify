@@ -64,6 +64,7 @@ const [loader,setloader]=useState(false)
             },
             (error) => {
               // Handle unsuccessful upload here
+              console.log(error);
               alert('Upload error:', error);
               setloader(false)
             },
@@ -75,6 +76,7 @@ const [loader,setloader]=useState(false)
                 console.log('Download URL:', downloadURL);
                 UploadPost(result.assets[0].name,downloadURL)
               } catch (error) {
+                console.log(error);
                 setloader(false)
                 alert('Error getting download URL:', error);
               }
@@ -266,24 +268,7 @@ onPress={()=>Linking.openURL(item.file_link)}
                     <Text style={{ color: focusedTab === 'Dashboard' ? '#000000' : '#000000' }}>Tasklist</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                    onPress={() => navigation.navigate('Chat', {
-                        status: status,
-                        owner_email: owner_email,
-                        project_id: project_id,
-                        user_id: user_id
-
-                    })}
-
-
-                    style={{ alignItems: 'center' }}>
-                    <Ionicons
-                        name={focusedTab === 'BuyerChat' ? 'chatbubble' : 'chatbubble'}
-                        size={24}
-                        color={focusedTab === 'BuyerChat' ? '#000000' : '#000000'}
-                    />
-                    <Text style={{ color: focusedTab === 'BuyerChat' ? '#000000' : '#000000' }}>Chat</Text>
-                </TouchableOpacity>
+                
 
                 <TouchableOpacity
 

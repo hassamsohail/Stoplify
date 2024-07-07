@@ -20,7 +20,14 @@ const firebaseConfig = {
   appId: "1:980636741523:web:5b375adc0ab93c41a04266",
   measurementId: "G-X4PS8ST8S1"
 };
-
+// const firebaseConfig = {
+//   apiKey: "AIzaSyAZOjEDjekZr2Z59QINK6ppyNdowxqXPIU",
+//   authDomain: "save-time-mobile-app.firebaseapp.com",
+//   projectId: "save-time-mobile-app",
+//   storageBucket: "save-time-mobile-app.appspot.com",
+//   messagingSenderId: "970889094131",
+//   appId: "1:970889094131:web:d72eb7d92af297e327e886"
+// };
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth=getAuth(app)

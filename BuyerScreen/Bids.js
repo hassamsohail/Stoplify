@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { firestore } from '../firebase/firebase';
 import { useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default function Bids() {
   let navigation = useNavigation();
@@ -18,8 +19,11 @@ export default function Bids() {
       GetAllDocs();
     })
   }, [])
-  const GetAllDocs = () => {
-    getDocs(query(collection(firestore, 'Bids'), where('project_owner_email', '==', email)))
+  const GetAllDocs = async() => {
+    try {
+      const userId = await AsyncStorage.getItem("user_id");
+
+    getDocs(query(collection(firestore, 'Bids'), where('user_id', '==', userId)))
       .then((querySnapshot) => {
         let temparray = [];
 
@@ -33,6 +37,9 @@ export default function Bids() {
       .catch((err) => {
         console.log(err);
       });
+    } catch (error) {
+      console.log(error);
+    }
   }
   return (
     <View
@@ -85,6 +92,7 @@ export default function Bids() {
           data={Jobs}
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
+      
             <TouchableOpacity
               onPress={() => navigation.navigate("BidDetail", {
 
@@ -95,7 +103,8 @@ export default function Bids() {
                 project_id:item.project_id,
                 user_id:item.user_id,
                 bid_id:item.bid_id,
-                status:item.purposal_status
+                status:item.purposal_status,
+                owner_id:item.owner_id
 
               })}
             >

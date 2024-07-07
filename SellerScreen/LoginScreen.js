@@ -24,10 +24,12 @@ import {
 } from "firebase/firestore";
 import Loader from "./Loader"; // Import the Loader component
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Updated import
+import { useNavigation } from "@react-navigation/native";
 
 const projectId = Constants.expoConfig.extra.eas.projectId;
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = () => {
+    let navigation=useNavigation()
     const [showPassword, setShowPassword] = useState(false);
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
@@ -93,9 +95,25 @@ const LoginScreen = ({navigation}) => {
                     console.log('User details stored successfully');
                     setLoader(false);
                     if (role === 'seller') {
-                        navigation.replace("CompleteProfile");
+                        // navigation.replace("CompleteProfile");
+                        navigation.reset({
+                            index:0,
+                            routes:[
+                                {
+                                    name:"CompleteProfile"
+                                }
+                            ]
+                        })
                     } else {
-                        navigation.navigate('BuyerProjectlist');
+                        navigation.reset({
+                            index:0,
+                            routes:[
+                                {
+                                    name:"BuyerProjectlist"
+                                }
+                            ]
+                        })
+                        // navigation.navigate('BuyerProjectlist');
                     }
                 });
             } else {
@@ -123,7 +141,7 @@ const LoginScreen = ({navigation}) => {
                 ) : (
                     <View style={{width: 327, alignSelf: "center"}}>
                         <View style={{height: 20}}/>
-                        <View
+                        {/* <View
                             style={{
                                 flexDirection: "row",
                                 justifyContent: "flex-end",
@@ -156,10 +174,10 @@ const LoginScreen = ({navigation}) => {
                                     />
                                 </View>
                             </Pressable>
-                        </View>
+                        </View> */}
                         <View style={{height: 20}}/>
                         <Text style={{fontSize: 32, fontWeight: "400", color: "#000000"}}>
-                            Hello Mate
+                            Hello Save Time
                         </Text>
                         <View style={{height: 5}}/>
                         <Text style={{fontSize: 14, fontWeight: "500", color: "#9B9B9B"}}>

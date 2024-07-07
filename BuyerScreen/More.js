@@ -1,13 +1,40 @@
-import {View, Text, TouchableOpacity, Image, StyleSheet, FlatList} from 'react-native'
-import React from 'react'
+import {View, Text, TouchableOpacity, Image, StyleSheet, FlatList, ActivityIndicator} from 'react-native'
+import React, { useState } from 'react'
 import Entypo from "react-native-vector-icons/Entypo";
 import {useSelector} from 'react-redux';
+import AsyncStorage from '@react-native-community/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
-export default function More({navigation}) {
+export default function More() {
+    let navigation=useNavigation()
     let email = useSelector((state) => state.counter.useremail)
     let username = useSelector((state) => state.counter.username)
     let user_id = useSelector((state) => state.counter.user_id)
-    console.log(user_id);
+    let [isloadering,setisloadering]=useState(false)
+    
+const clearAllKeys = async () => {
+
+    try {
+     setisloadering(true)
+        await AsyncStorage.clear();
+      console.log('All keys cleared');
+     setisloadering(false)
+
+        navigation.reset({
+            index:0,
+            routes:[
+                {
+                    name:"LoginScreen"
+                }
+            ]
+        })
+
+    } catch (error) {
+     setisloadering(false)
+
+      console.log('Error clearing AsyncStorage:', error);
+    }
+  };
     return (
         <View
             style={{
@@ -64,7 +91,7 @@ export default function More({navigation}) {
                         height: 20,
                     }}
                 />
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     onPress={() => {
                         navigation.navigate("PostProject")
                     }}>
@@ -97,7 +124,7 @@ export default function More({navigation}) {
                             source={require('../assets/Left.png')}
                         />
                     </View>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <View
                     style={{
                         height: 10,
@@ -206,21 +233,10 @@ export default function More({navigation}) {
                     </View>
                 </TouchableOpacity>
 
-                <View
-                    style={{
-                        height: 10,
-                    }}
-                />
+               
 
-                <View
-                    style={{
-                        // borderWidth:1,
-                        borderBottomWidth: 1,
-                        borderBottomColor: '#000000',
-                        opacity: 0.1,
-                    }}
-                />
-                <View
+             
+                {/* <View
                     style={{
                         height: 10,
                     }}
@@ -259,55 +275,9 @@ export default function More({navigation}) {
                             source={require('../assets/Left.png')}
                         />
                     </View>
-                </TouchableOpacity>
-                <View
-                    style={{
-                        // borderWidth:1,
-                        borderBottomWidth: 1,
-                        borderBottomColor: '#000000',
-                        opacity: 0.1,
-                    }}
-                />
-                <View
-                    style={{
-                        height: 10,
-                    }}
-                />
-                <TouchableOpacity
-                    onPress={() => {
-                        // copyToClipboard()
-                        navigation.navigate("ChatBot")
-                    }}>
-                    <View
-                        style={{
-                            justifyContent: 'space-between',
-                            flexDirection: 'row',
-                        }}>
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                // justifyContent:"center"
-                            }}>
-
-                            <Text
-                                style={{
-                                    fontSize: 14,
-                                    color: '#000000',
-                                    marginLeft: 20,
-                                }}>
-                                ChatBot
-                            </Text>
-                        </View>
-                        <Image
-                            style={{
-                                height: 20,
-                                width: 20,
-                            }}
-                            source={require('../assets/Left.png')}
-                        />
-                    </View>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
+              
+                
                 <View
                     style={{
                         height: 10,
@@ -413,6 +383,74 @@ export default function More({navigation}) {
                                 }}>
                                 Support
                             </Text>
+                        </View>
+                        <Image
+                            style={{
+                                height: 20,
+                                width: 20,
+                            }}
+                            source={require('../assets/Left.png')}
+                        />
+                    </View>
+                </TouchableOpacity>
+                <View
+                    style={{
+                        height: 10,
+                    }}
+                />
+                <View
+                    style={{
+                        // borderWidth:1,
+                        borderBottomWidth: 1,
+                        borderBottomColor: '#000000',
+                        opacity: 0.1,
+                    }}
+                />
+                     <View
+                    style={{
+                        height: 10,
+                    }}
+                />
+                <TouchableOpacity
+                 disabled={isloadering}
+                    onPress={() => {
+                        // onShare();
+                        clearAllKeys()
+
+
+                    }}>
+                    <View
+                        style={{
+                            justifyContent: 'space-between',
+                            flexDirection: 'row',
+                        }}>
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                width:"100%",
+                                justifyContent:"space-between"
+
+                            }}>
+
+                            <Text
+                                style={{
+                                    fontSize: 14,
+                                    color: '#000000',
+                                    marginLeft: 20,
+                                }}>
+                                Log Out
+                            </Text>
+                            {
+                                isloadering&&(
+                                    <ActivityIndicator
+                                    
+                                    size={"small"}
+                                    color={'black'}
+                                    
+                                    />
+                                )
+                            }
                         </View>
                         <Image
                             style={{

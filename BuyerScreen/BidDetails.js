@@ -6,7 +6,7 @@ import { firestore } from '../firebase/firebase';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 export default function BidDetail({ route, navigation }) {
-    const { Skill, Bid, project_id, user_id,bid_id,status } = route.params;
+    const { Skill, Bid, project_id, user_id,bid_id,status,owner_id } = route.params;
     const [selectedStatus, setSelectedStatus] = useState(null);
     const [Username, setUsername] = useState("")
     const [JobDetail, setJobDetail] = useState("")
@@ -174,7 +174,7 @@ export default function BidDetail({ route, navigation }) {
                     </Text>
                 </View>
 
-                {DashboardCheck=="pending" && (
+                {/* {DashboardCheck=="pending" && (
                     <View>
                         <TouchableOpacity
                             style={styles.dashboardButton}
@@ -189,7 +189,7 @@ export default function BidDetail({ route, navigation }) {
                             <Text style={styles.dashboardButtonText}>Rejected</Text>
                         </TouchableOpacity>
                     </View>
-                )}
+                )} */}
 
                 {DashboardCheck === 'active' && (
                     <TouchableOpacity
@@ -206,7 +206,27 @@ export default function BidDetail({ route, navigation }) {
                         <Text style={styles.dashboardButtonText}>Dashboard</Text>
                     </TouchableOpacity>
                 )}
+            
 
+          <TouchableOpacity
+          style={styles.dashboardButton}
+          onPress={() =>
+        //      navigation.navigate('Tasklist',{
+        //     status:  project_owner_email==CheckLogedUser?true:false,
+        //     owner_email:project_owner_email,
+        //     project_id:project_id,
+        //     user_id:user_id
+
+
+        //   })
+                  navigation.navigate("UserChat", {
+              Username: Username,
+              userId: owner_id
+          })
+        }
+      >
+          <Text style={styles.dashboardButtonText}>Message</Text>
+      </TouchableOpacity>
               
 
             </View>  
