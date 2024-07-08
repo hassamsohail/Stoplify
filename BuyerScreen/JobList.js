@@ -10,6 +10,7 @@ import {
   Modal,
   Button,
   ScrollView,
+  RefreshControl
 } from "react-native";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { firestore } from "../firebase/firebase";
@@ -23,6 +24,8 @@ export default function JobList() {
   const [data, setdata] = useState([]);
   const [originalData, setoriginalData] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false); // State for RefreshControl
+
   let navigation = useNavigation();
 
   const searchFilter = (text) => {
@@ -42,9 +45,7 @@ export default function JobList() {
     }
   };
 
-  const clearText = () => {
-    setsearch("");
-  };
+
   const [selectedTags, setSelectedTags] = useState([]);
 
   const tags = [
@@ -93,6 +94,11 @@ export default function JobList() {
     });
   }, []);
 
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+     GetAllDocs();
+    setRefreshing(false);
+  }, []);
   const GetAllDocs = () => {
     const skills = ["React Native", "CSS"];
 
@@ -143,14 +149,7 @@ export default function JobList() {
               autocorrect={false}
               autoCapitalize="none"
             />
-            {search !== "" && (
-              <TouchableOpacity onPress={clearText}>
-                <Image
-                  source={require("../assets/Filled.png")}
-                  style={styles.clearIcon}
-                />
-              </TouchableOpacity>
-            )}
+        
           </View>
         </View>
         {/* <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.filterButton}>
@@ -206,6 +205,13 @@ export default function JobList() {
                 </View>
               </TouchableOpacity>
             )}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={["#ED6D34"]}
+              />
+            }
           />
         </View>
         <View
@@ -292,7 +298,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   searchInputContainer: {
-    width: "83%",
+    width: "100%",
     borderWidth: 1,
     borderColor: "#E0E0E0",
     height: 46,
@@ -305,7 +311,7 @@ const styles = StyleSheet.create({
   searchInputSubContainer: {
     flexDirection: "row",
     alignItems: "center",
-    width: "84%",
+    width: "100%",
   },
   searchIcon: {
     width: 22,

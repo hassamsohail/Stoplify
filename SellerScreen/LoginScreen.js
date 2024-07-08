@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Constants from "expo-constants";
 import {
     View,
@@ -11,9 +11,11 @@ import {
     ImageBackground,
     ScrollView,
 } from "react-native";
-import {TextInput} from "react-native-paper";
-import {signInWithEmailAndPassword} from "firebase/auth";
-import {auth, firestore} from "../firebase/firebase";
+import { TextInput } from "react-native-paper";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth, firestore } from "../firebase/firebase";
+import { Formik } from "formik";
+
 import {
     query,
     where,
@@ -22,19 +24,20 @@ import {
     getDocs,
     updateDoc,
 } from "firebase/firestore";
-import Loader from "./Loader"; // Import the Loader component
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Updated import
+import Loader from "./Loader";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from "@react-navigation/native";
+
+import * as yup from "yup";
 
 const projectId = Constants.expoConfig.extra.eas.projectId;
 
 const LoginScreen = () => {
-    let navigation=useNavigation()
+    let navigation = useNavigation();
     const [showPassword, setShowPassword] = useState(false);
-    const [username, setUserName] = useState('');
-    const [password, setPassword] = useState('');
     const [loader, setLoader] = useState(false);
     const [Device_token, SetDevice_token] = useState("");
+
     useEffect(() => {
         const checkStoredCredentials = async () => {
             try {
@@ -45,8 +48,6 @@ const LoginScreen = () => {
                 const storedId = await AsyncStorage.getItem('user_id');
 
                 if (storedUsername && storedPassword) {
-                    setUserName(storedUsername);
-                    setPassword(storedPassword);
                     // console.log("this is a ", st)
                     await attemptSignIn(storedUsername, storedPassword);
                 }
@@ -71,7 +72,7 @@ const LoginScreen = () => {
                 console.log("User's email is verified");
                 const usersRef = collection(firestore, "user");
                 const q = query(usersRef, where("user_email", "==", username));
-                const Data = {device_token: Device_token};
+                const Data = { device_token: Device_token };
                 const querySnapshot = await getDocs(q);
                 querySnapshot.forEach(async (doc1) => {
                     const documentRef = doc(firestore, "user", doc1.id);
@@ -95,25 +96,23 @@ const LoginScreen = () => {
                     console.log('User details stored successfully');
                     setLoader(false);
                     if (role === 'seller') {
-                        // navigation.replace("CompleteProfile");
                         navigation.reset({
-                            index:0,
-                            routes:[
+                            index: 0,
+                            routes: [
                                 {
-                                    name:"CompleteProfile"
+                                    name: "CompleteProfile"
                                 }
                             ]
                         })
                     } else {
                         navigation.reset({
-                            index:0,
-                            routes:[
+                            index: 0,
+                            routes: [
                                 {
-                                    name:"BuyerProjectlist"
+                                    name: "BuyerProjectlist"
                                 }
                             ]
                         })
-                        // navigation.navigate('BuyerProjectlist');
                     }
                 });
             } else {
@@ -124,137 +123,112 @@ const LoginScreen = () => {
         } catch (error) {
             console.error('Error during sign-in:', error);
             setLoader(false);
-            // Handle sign-in errors
         }
     };
 
-    const Signin = () => {
-        attemptSignIn(username, password);
-    };
-
+    const validationSchema = yup.object().shape({
+        username: yup.string().email('Please enter a valid email').required('Email is required'),
+        password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
+    });
 
     return (
         <ScrollView>
-            <View style={{flex: 1, height: Dimensions.get("window").height, backgroundColor: "#fff"}}>
+            <View style={{ flex: 1, height: Dimensions.get("window").height, backgroundColor: "#fff" }}>
                 {loader ? (
-                    <Loader/>
+                    <Loader />
                 ) : (
-                    <View style={{width: 327, alignSelf: "center"}}>
-                        <View style={{height: 20}}/>
-                        {/* <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "flex-end",
-                                alignItems: "center",
-                                width: "100%",
-                                height: 40,
-                            }}
-                        >
-                            <Pressable
-                                onPress={() => {
-                                    navigation.navigate("CreateAccount");
-                                }}
-                            >
-                                <View
-                                    style={{
-                                        alignItems: "center",
-                                        width: 40,
-                                        height: 40,
-                                        justifyContent: "center",
-                                        borderRadius: 12,
-                                        backgroundColor: "#E75E31",
-                                    }}
-                                >
-                                    <Image
-                                        source={require("../assets/Cross.png")}
-                                        style={{
-                                            width: 24,
-                                            height: 24,
-                                        }}
-                                    />
-                                </View>
-                            </Pressable>
-                        </View> */}
-                        <View style={{height: 20}}/>
-                        <Text style={{fontSize: 32, fontWeight: "400", color: "#000000"}}>
+                    <View style={{ width: 327, alignSelf: "center" }}>
+                        <View style={{ height: 20 }} />
+                        <Text style={{ fontSize: 32, fontWeight: "400", color: "#000000" }}>
                             Hello Save Time
                         </Text>
-                        <View style={{height: 5}}/>
-                        <Text style={{fontSize: 14, fontWeight: "500", color: "#9B9B9B"}}>
+                        <View style={{ height: 5 }} />
+                        <Text style={{ fontSize: 14, fontWeight: "500", color: "#9B9B9B" }}>
                             Login to continue
                         </Text>
-                        <View style={{height: 60}}/>
-                        <TextInput
-                            label="Email Address"
-                            value={username}
-                            onChangeText={(Email) => setUserName(Email)}
-                            style={{backgroundColor: "rgba(58, 58, 77, 0.1)"}}
-                            underlineColor="transparent" // Active border color
-                            underlineColorAndroid="rgba(58, 58, 77, 0.1)"
-                            selectionColor="#E75E31" // Set selection color
-                            activeUnderlineColor="#E75E31"
-                            outlineColor="rgba(58, 58, 77, 0.1)"
-                            textColor="#000000"
-                        />
-                        <View style={{height: 15}}/>
-                        <TextInput
-                            label="Password"
-                            value={password}
-                            secureTextEntry={!showPassword}
-                            right={
-                                <TextInput.Icon
-                                    icon={({size, color}) => <View></View>}
-                                    onPress={togglePasswordVisibility}
-                                />
-                            }
-                            onChangeText={(Password) => setPassword(Password)}
-                            style={{backgroundColor: "rgba(58, 58, 77, 0.1)"}}
-                            underlineColor="transparent" // Active border color
-                            underlineColorAndroid="rgba(58, 58, 77, 0.3)"
-                            selectionColor="#E75E31" // Set selection color
-                            activeUnderlineColor="#E75E31"
-                            outlineColor="rgba(58, 58, 77, 0.3)"
-                            textColor="#000000"
-                            underlineStyle={{borderColor: "#fff"}}
-                        />
-                        <View style={{height: 10}}/>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "flex-end",
-                                alignItems: "center",
-                            }}
-                        ></View>
-                        <View style={{height: 100}}/>
-                        <Pressable
-                            style={{width: 327}}
-                            onPress={() => {
-                                Signin();
+                        <View style={{ height: 60 }} />
+
+                        <Formik
+                            initialValues={{ username: '', password: '' }}
+                            validationSchema={validationSchema}
+                            onSubmit={(values) => {
+                                attemptSignIn(values.username, values.password);
                             }}
                         >
-                            <ImageBackground
-                                source={require("../assets/btn.png")}
-                                style={{
-                                    width: "100%",
-                                    height: 56,
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    alignSelf: "center",
-                                }}
-                            >
-                                <Text
-                                    style={{
-                                        fontSize: 14,
-                                        color: "#fff",
-                                        fontWeight: "500",
-                                        textAlign: "center",
-                                    }}
-                                >
-                                    Sign In
-                                </Text>
-                            </ImageBackground>
-                        </Pressable>
-                        <View style={{height: 20}}/>
+                            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                                <View>
+                                    <TextInput
+                                        label="Email Address"
+                                        value={values.username}
+                                        onChangeText={handleChange('username')}
+                                        onBlur={handleBlur('username')}
+                                        style={{ backgroundColor: "rgba(58, 58, 77, 0.1)" }}
+                                        underlineColor="transparent"
+                                        underlineColorAndroid="rgba(58, 58, 77, 0.1)"
+                                        selectionColor="#E75E31"
+                                        activeUnderlineColor="#E75E31"
+                                        outlineColor="rgba(58, 58, 77, 0.1)"
+                                        textColor="#000000"
+                                    />
+                                    {errors.username && touched.username && (
+                                        <Text style={{ color: 'red' }}>{errors.username}</Text>
+                                    )}
+                                    <View style={{ height: 15 }} />
+                                    <TextInput
+                                        label="Password"
+                                        value={values.password}
+                                        secureTextEntry={!showPassword}
+                                        // right={
+                                        //     <TextInput.Icon
+                                        //         icon={({ size, color }) => <View></View>}
+                                        //         onPress={togglePasswordVisibility}
+                                        //     />
+                                        // }
+                                        right={<TextInput.Icon icon={showPassword ? "eye-off" : "eye"} onPress={togglePasswordVisibility} />}
+
+                                        onChangeText={handleChange('password')}
+                                        onBlur={handleBlur('password')}
+                                        style={{ backgroundColor: "rgba(58, 58, 77, 0.1)" }}
+                                        underlineColor="transparent"
+                                        underlineColorAndroid="rgba(58, 58, 77, 0.3)"
+                                        selectionColor="#E75E31"
+                                        activeUnderlineColor="#E75E31"
+                                        outlineColor="rgba(58, 58, 77, 0.3)"
+                                        textColor="#000000"
+                                    />
+                                    {errors.password && touched.password && (
+                                        <Text style={{ color: 'red' }}>{errors.password}</Text>
+                                    )}
+                                    <View style={{ height: 10 }} />
+                                    <View style={{ height: 100 }} />
+                                    <Pressable style={{ width: 327 }} onPress={handleSubmit}>
+                                        <ImageBackground
+                                            source={require("../assets/btn.png")}
+                                            style={{
+                                                width: "100%",
+                                                height: 56,
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                alignSelf: "center",
+                                            }}
+                                        >
+                                            <Text
+                                                style={{
+                                                    fontSize: 14,
+                                                    color: "#fff",
+                                                    fontWeight: "500",
+                                                    textAlign: "center",
+                                                }}
+                                            >
+                                                Sign In
+                                            </Text>
+                                        </ImageBackground>
+                                    </Pressable>
+                                </View>
+                            )}
+                        </Formik>
+
+                        <View style={{ height: 20 }} />
                         <Pressable
                             onPress={() => {
                                 navigation.navigate("Join");

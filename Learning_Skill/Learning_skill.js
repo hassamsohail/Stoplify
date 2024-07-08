@@ -1,100 +1,84 @@
-import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import { SelectList } from 'react-native-dropdown-select-list'
+import { StyleSheet, Text, View } from 'react-native';
+import { SelectList } from 'react-native-dropdown-select-list';
 import { Video } from 'expo-av';
+
 export default function Learning_Skill() {
-  const [selected, setSelected] = React.useState("");
-  const React_Data = [
-    "https://firebasestorage.googleapis.com/v0/b/prolancer-403a6.appspot.com/o/videos%2F%230%20Level%202%20React%20Intro.mp4?alt=media&token=bd7f2e6a-5576-41cf-b544-418da6804da2",
-    "https://firebasestorage.googleapis.com/v0/b/prolancer-403a6.appspot.com/o/videos%2F%230%20Level%202%20React%20Intro.mp4?alt=media&token=bd7f2e6a-5576-41cf-b544-418da6804da2",
-    "https://firebasestorage.googleapis.com/v0/b/prolancer-403a6.appspot.com/o/videos%2F%230%20Level%202%20React%20Intro.mp4?alt=media&token=bd7f2e6a-5576-41cf-b544-418da6804da2",
-  ]
-  const Flutter_Data = [
-    "https://firebasestorage.googleapis.com/v0/b/prolancer-403a6.appspot.com/o/videos%2FWhat%20Is%20Flutter%20_%20Introduction%20To%20Flutter%20_%20Flutter%20_%20Intellipaat.mp4?alt=media&token=27956a13-1949-4943-ac91-452d99ac1d68",
-    "https://firebasestorage.googleapis.com/v0/b/prolancer-403a6.appspot.com/o/videos%2FWhat%20Is%20Flutter%20_%20Introduction%20To%20Flutter%20_%20Flutter%20_%20Intellipaat.mp4?alt=media&token=27956a13-1949-4943-ac91-452d99ac1d68",
-    "https://firebasestorage.googleapis.com/v0/b/prolancer-403a6.appspot.com/o/videos%2FWhat%20Is%20Flutter%20_%20Introduction%20To%20Flutter%20_%20Flutter%20_%20Intellipaat.mp4?alt=media&token=27956a13-1949-4943-ac91-452d99ac1d68",
-  ]
-  const Mobile_Data = [
-    "https://firebasestorage.googleapis.com/v0/b/prolancer-403a6.appspot.com/o/videos%2FBuild%20Apps%20With%20XDK%20and%20Parse_%20Introduction.mp4?alt=media&token=fd38a4bb-493b-4bfd-afa3-7236c50287e7",
-    "https://firebasestorage.googleapis.com/v0/b/prolancer-403a6.appspot.com/o/videos%2FBuild%20Apps%20With%20XDK%20and%20Parse_%20Introduction.mp4?alt=media&token=fd38a4bb-493b-4bfd-afa3-7236c50287e7",
-    "https://firebasestorage.googleapis.com/v0/b/prolancer-403a6.appspot.com/o/videos%2FBuild%20Apps%20With%20XDK%20and%20Parse_%20Introduction.mp4?alt=media&token=fd38a4bb-493b-4bfd-afa3-7236c50287e7",
-  ]
-  const Cyber_Seacurity = [
-    "https://firebasestorage.googleapis.com/v0/b/prolancer-403a6.appspot.com/o/videos%2FCyber%20Security%20-%20Video%20Animation%20Services.mp4?alt=media&token=80bb1610-c5fb-4b36-8652-51544747734d",
-    "https://firebasestorage.googleapis.com/v0/b/prolancer-403a6.appspot.com/o/videos%2FCyber%20Security%20-%20Video%20Animation%20Services.mp4?alt=media&token=80bb1610-c5fb-4b36-8652-51544747734d",
-    "https://firebasestorage.googleapis.com/v0/b/prolancer-403a6.appspot.com/o/videos%2FCyber%20Security%20-%20Video%20Animation%20Services.mp4?alt=media&token=80bb1610-c5fb-4b36-8652-51544747734d",
-  ]
-  const [Skill_Videos, SetSkill_Videos] = useState([]);
-  const [loader, setloader] = useState(false)
-  const data = [
-    // {key:'1', value:'React', disabled:true},
-    { key: '1', value: 'React', },
-    { key: '2', value: 'Flutter' },
-    { key: '3', value: 'Mobile' },
-    // {key:'4', value:'Django', disabled:true},
-    { key: '5', value: 'Cyber Seacurity' },
-    // {key:'6', value:'Diary Products'},
-    // {key:'7', value:'Drinks'},
-  ]
-  const HandleValue = (value) => {
-    setloader(true)
-    console.log(value);
-    if (value == "React") {
-      SetSkill_Videos(React_Data);
-      setloader(false)
-    } else if (value == "Flutter") {
-      SetSkill_Videos(Flutter_Data);
-      setloader(false)
-    } else if (value == "Mobile") {
-      SetSkill_Videos(Mobile_Data);
-      setloader(false)
-    } else {
-      SetSkill_Videos(Cyber_Seacurity);
-      setloader(false)
+  const [selected, setSelected] = useState("");
+  const [skillVideos, setSkillVideos] = useState([]);
+  const [loader, setLoader] = useState(false);
+
+  const reactData = [
+    "https://firebasestorage.googleapis.com/v0/b/stoplify.appspot.com/o/y2mate.com%20-%20React%20Native%20in%20100%20Seconds_480p.mp4?alt=media&token=7177d7e4-7c7d-4d8c-b4f6-03511dd0034e"
+  ];
+
+  const flutterData = [
+    "https://firebasestorage.googleapis.com/v0/b/stoplify.appspot.com/o/y2mate.com%20-%20Expo%20in%20100%20Seconds_480p.mp4?alt=media&token=ba30ac8f-7384-44e9-a9dc-a5a07a15d42d"
+  ];
+
+  const mobileData = [
+    "https://firebasestorage.googleapis.com/v0/b/stoplify.appspot.com/o/y2mate.com%20-%20TypeScript%20in%20100%20Seconds_480p.mp4?alt=media&token=09994204-6ab0-48c9-a221-c4e17d7485ba"
+  ];
+
+  const Flutter = [
+    "https://firebasestorage.googleapis.com/v0/b/stoplify.appspot.com/o/y2mate.com%20-%20Futurewait%20Technique%20of%20the%20Week_480p.mp4?alt=media&token=5f690366-e0c2-4aff-97d2-9a11c8f9c0ff"
+  ];
+
+  const handleValue = (value) => {
+    setLoader(true);
+    setSelected(value);
+    switch (value) {
+      case "React_Native":
+        setSkillVideos(reactData);
+        break;
+      case "Expo":
+        setSkillVideos(flutterData);
+        break;
+      case "Type_Script":
+        setSkillVideos(mobileData);
+        break;
+      case "Flutter":
+        setSkillVideos(Flutter);
+        break;
+      default:
+        setSkillVideos([]);
     }
-  }
+    setLoader(false);
+  };
+
   return (
     <View style={styles.container}>
       <View style={{ height: 40 }} />
       <View style={{ width: "90%" }}>
-
         <SelectList
-          setSelected={(val) => HandleValue(val)}
-          data={data}
+          setSelected={(val) => handleValue(val)}
+          data={[
+            { key: '1', value: 'React_Native' },
+            { key: '2', value: 'Expo' },
+            { key: '3', value: 'Type_Script' },
+            { key: '4', value: 'Flutter' }
+          ]}
           save="value"
-        // placeholder='Select Options'
         />
-
       </View>
 
-      {Skill_Videos.length<=0 ?
-      
-      
-      <View  style={{flex:1,justifyContent:"center"}}>
-      <Text>Please Select Skill from </Text>
-      
+      {loader ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : skillVideos.length === 0 ? (
+        <View style={{ flex: 1, justifyContent: "center" }}>
+          <Text>Please select a skill from the dropdown.</Text>
         </View>
-        :Skill_Videos.map((e) => (
-
-        <Video
-          source={{ uri: e }}
-          style={{ width: 300, height: 200 }}
-          useNativeControls // Enable Expo's built-in video controls
-          // resizeMode="contain" // Adjust the video's aspect ratio to fit the player
-        />
-      ))
-
-
-
-
-
-
-      }
-
-
-
-
+      ) : (
+        skillVideos.map((video, index) => (
+          <Video
+            key={index}
+            source={{ uri: video }}
+            resizeMode="contain"
+            style={{ width: 300, height: 200 }}
+            useNativeControls
+          />
+        ))
+      )}
     </View>
   );
 }
@@ -102,8 +86,7 @@ export default function Learning_Skill() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#fff',
     alignItems: 'center',
-    // justifyContent: 'center',
+    justifyContent: 'center',
   },
 });

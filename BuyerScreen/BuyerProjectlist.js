@@ -8,6 +8,7 @@ import {
   Image,
   Pressable,
   ActivityIndicator,
+  RefreshControl
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
@@ -20,28 +21,10 @@ import AsyncStorage from "@react-native-community/async-storage";
 export default function BuyerProjectlist() {
   const [search, setsearch] = React.useState();
   const [allData, setallData] = useState([]);
-  const [data, setdata] = React.useState([]);
-  const [originalData, setoriginalData] = React.useState([]);
+
   const [user_id, setuser_id] = useState(0);
   let navigation = useNavigation();
-  // const searchFilter = (text) => {
-  //   console.log(text);
-  //   if (text) {
-  //     const newdata = Jobs.filter((item) => {
-  //       const itemdata = item.description
-  //         ? item.description.toUpperCase()
-  //         : "".toUpperCase();
-  //       const textData = text.toUpperCase();
-  //       return itemdata.indexOf(textData) > -1;
-  //     });
-  //     SetJobs(newdata);
-  //     setsearch(text);
-  //   } else {
-  //     SetJobs(allData);
-  //     console.log(allData);
-  //     setsearch(text);
-  //   }
-  // };
+
   const searchFilter = (text) => {
     if (text) {
       const newdata = Jobs.filter((item) => {
@@ -58,9 +41,11 @@ export default function BuyerProjectlist() {
       setsearch(text);
     }
   };
-  const clearText = () => {
-    setsearch("");
-  };
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    await GetAllDocs();
+    setRefreshing(false);
+  }, []);
   const [Jobs, SetJobs] = useState([]);
   useEffect(() => {
     navigation.addListener("focus", () => {
@@ -69,10 +54,10 @@ export default function BuyerProjectlist() {
   }, []);
   const GetAllDocs = async () => {
     try {
-        console.log("Data");
+      console.log("Data");
       // Fetch all projects
       const storedId = await AsyncStorage.getItem("user_id");
-      console.log("Stored Id",storedId);
+      console.log("Stored Id", storedId);
       const projectsSnapshot = await getDocs(collection(firestore, "projects"));
       let projectsArray = [];
       setuser_id(storedId);
@@ -84,28 +69,7 @@ export default function BuyerProjectlist() {
         projectsArray.push(projectData);
       });
 
-      // Fetch all bids
-      const bidsSnapshot = await getDocs(collection(firestore, "Bids"));
-      let bidsArray = [];
 
-      bidsSnapshot.forEach((doc) => {
-        let bidData = doc.data();
-        bidData.id = doc.id; // Store the document ID for reference
-        bidsArray.push(bidData);
-      });
-
-      // Count the total bids for each project
-      projectsArray.forEach((project) => {
-        const projectBids = bidsArray.filter(
-          (bid) => bid.project_id === project.doc_id
-        );
-        project.totalBids = projectBids.length;
-      });
-
-      console.log(`------------------------------bidsArray-`);
-      console.log(projectsArray);
-      console.log(`------------------------------bidsArray-`);
-      // Set the data to the state
       SetJobs(projectsArray);
       setallData(projectsArray);
     } catch (err) {
@@ -126,34 +90,34 @@ export default function BuyerProjectlist() {
                 console.log(err);
             });*/
   };
-
+  const [refreshing, setRefreshing] = useState(false);
   const [bottomSheetVisible, setBottomSheetVisible] = useState(false);
   const [selectedJobItem, setSelectedJobItem] = useState(null);
-  let [isloadering,setisloadering]=useState(false)
-    
+  let [isloadering, setisloadering] = useState(false)
+
   const clearAllKeys = async () => {
-  
-      try {
-       setisloadering(true)
-          await AsyncStorage.clear();
-        console.log('All keys cleared');
-       setisloadering(false)
-  
-          navigation.reset({
-              index:0,
-              routes:[
-                  {
-                      name:"LoginScreen"
-                  }
-              ]
-          })
-  
-      } catch (error) {
-       setisloadering(false)
-  
-        console.log('Error clearing AsyncStorage:', error);
-      }
-    };
+
+    try {
+      setisloadering(true)
+      await AsyncStorage.clear();
+      console.log('All keys cleared');
+      setisloadering(false)
+
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: "LoginScreen"
+          }
+        ]
+      })
+
+    } catch (error) {
+      setisloadering(false)
+
+      console.log('Error clearing AsyncStorage:', error);
+    }
+  };
   const openBottomSheet = (item) => {
     setSelectedJobItem(item);
     setBottomSheetVisible(true);
@@ -182,27 +146,27 @@ export default function BuyerProjectlist() {
         backgroundColor: "white",
       }}
     >
-      <View style={{width:"90%",alignSelf:'center',flexDirection:"row",alignItems:"center",justifyContent:"space-between"}}>
+      <View style={{ width: "90%", alignSelf: 'center', flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
 
-      <Image
-        source={require("../assets/Logo.png")}
-        style={{
-          width: 70,
-          height: 70,
-          alignSelf: "center",
-        }}
-      ></Image>
-      <Pressable
-      disabled={isloadering}
-      onPress={()=>{
-        clearAllKeys()
-      }}
-      >
-      {isloadering?<ActivityIndicator size={'small'} />:<Text style={{fontWeight:"bold"}}>Log Out</Text>
+        <Image
+          source={require("../assets/Logo.png")}
+          style={{
+            width: 70,
+            height: 70,
+            alignSelf: "center",
+          }}
+        ></Image>
+        <Pressable
+          disabled={isloadering}
+          onPress={() => {
+            clearAllKeys()
+          }}
+        >
+          {isloadering ? <ActivityIndicator size={'small'} /> : <Text style={{ fontWeight: "bold" }}>Log Out</Text>
 
-      }
+          }
 
-      </Pressable>
+        </Pressable>
       </View>
 
       <View
@@ -312,17 +276,7 @@ export default function BuyerProjectlist() {
               autocorrect={false}
               autoCapitalize="none"
             />
-            {search !== "" && (
-              <TouchableOpacity style={{}} onPress={clearText}>
-                <Image
-                  source={require("../assets/Filled.png")}
-                  style={{
-                    width: 20,
-                    height: 20,
-                  }}
-                />
-              </TouchableOpacity>
-            )}
+
           </View>
         </View>
         <TouchableOpacity
@@ -413,53 +367,18 @@ export default function BuyerProjectlist() {
                 {item.budget_status}: {item.budget_rate}$ - Est. Time:{" "}
                 {item.time_taken}
               </Text>
-              <View
+              <Text
                 style={{
-                  flexDirection: "row",
-                  alignItems: "flex-end",
+                  marginTop: 10,
+                  fontSize: 20,
+                  color: "#000",
+                  // fontWeight:"bold"
                 }}
               >
-                <View>
-                  <Text
-                    style={{
-                      marginTop: 10,
-                      fontSize: 16,
-                      color: "#5B5B5B",
-                      // fontWeight:"bold"
-                    }}
-                  >
-                    {item?.totalBids?.length}
-                  </Text>
+                {item.job_description}
+              </Text>
 
-                  <Text
-                    style={{
-                      marginTop: 10,
-                      fontSize: 16,
-                      color: "#5B5B5B",
-                      // fontWeight:"bold"
-                    }}
-                  >
-                    Proposal
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    width: 80,
-                  }}
-                />
-                <View>
-                  <Text
-                    style={{
-                      marginTop: 10,
-                      fontSize: 16,
-                      color: "#5B5B5B",
-                      // fontWeight:"bold"
-                    }}
-                  >
-                    Hired
-                  </Text>
-                </View>
-              </View>
+
               <View
                 style={{
                   marginTop: 15,
@@ -469,6 +388,13 @@ export default function BuyerProjectlist() {
               />
             </View>
           )}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#ED6D34"]}
+            />
+          }
         />
       </View>
       <BottomSheet
@@ -481,22 +407,22 @@ export default function BuyerProjectlist() {
             <Ionicons name="close" size={24} color="black" />
           </TouchableOpacity>
         </View>
-        {selectedJobItem?.user_id == user_id && (  
-            <ListItem
-          onPress={() => {
-            closeBottomSheet();
-            navigation.navigate("ProposalList", {
-              projectId: selectedJobItem.doc_id,
-              job_title: selectedJobItem.job_title,
-              user_name: selectedJobItem.user_name,
-            });
-          }}
-          containerStyle={{ backgroundColor: "#FFFFFF" }}
-        >
-          <ListItem.Content>
-            <ListItem.Title>View Proposals</ListItem.Title>
-          </ListItem.Content>
-        </ListItem>
+        {selectedJobItem?.user_id == user_id && (
+          <ListItem
+            onPress={() => {
+              closeBottomSheet();
+              navigation.navigate("ProposalList", {
+                projectId: selectedJobItem.doc_id,
+                job_title: selectedJobItem.job_title,
+                user_name: selectedJobItem.user_name,
+              });
+            }}
+            containerStyle={{ backgroundColor: "#FFFFFF" }}
+          >
+            <ListItem.Content>
+              <ListItem.Title>View Proposals</ListItem.Title>
+            </ListItem.Content>
+          </ListItem>
         )}
         <ListItem
           onPress={() => {
@@ -538,7 +464,7 @@ export default function BuyerProjectlist() {
             </ListItem.Content>
           </ListItem>
         )}
-        {selectedJobItem?.user_id == user_id &&(
+        {selectedJobItem?.user_id == user_id && (
           <ListItem
             onPress={removeJobItem}
             containerStyle={{ backgroundColor: "#FFFFFF" }}

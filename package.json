@@ -1,5 +1,5 @@
 {
-  "name": "SaveTime",
+  "name": "Stoplify",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -31,6 +31,7 @@
     "expo-status-bar": "^1.12.1",
     "expo-updates": "^0.25.17",
     "firebase": "^10.2.0",
+    "formik": "^2.4.6",
     "react": "18.2.0",
     "react-native": "^0.74.2",
     "react-native-dropdown-select-list": "^2.0.4",
@@ -42,7 +43,8 @@
     "react-native-screens": "^3.31.1",
     "react-native-vector-icons": "^10.0.0",
     "react-redux": "^8.1.2",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0"
